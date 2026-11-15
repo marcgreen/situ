@@ -26,7 +26,7 @@ you keep one list, [[todo]], however you like: add, reword, check, delete. an ag
 - `reading/` - outside reading you hand the agent ("ingest"). never rebuilt.
 - [[agent]] - instructions for any agent session running this, incl. ids and the board query
 - [[log]] - one entry per session; the handoff between sessions
-- `state/` - the agent's bookkeeping: your list as of the last run, the watch list and read marks, and `decisions.md`
+- `state/` - the agent's bookkeeping: your list as of the last run, the watch list and read marks, `decisions.md`, `archive/` (your list and [[implications]] as each run left them) and `metrics.csv` (one row of counts per run)
 
 ## rhythm
 

@@ -42,6 +42,8 @@ It is not a task manager, and it does not copy tickets or messages. It queries t
     watch.md         watched conversations, how far each was read, how far searches were read.
     decisions.md     the memory: open questions, the person's answers, leftovers of deleted
                      items, the date each item was first seen, edits made to the list on request.
+    metrics.csv      one row of counts per run.
+    archive/         one folder per run: the list as read and the generated page as rebuilt.
   streams/           one page per workstream, for depth. rebuilt on request.
   reading/           outside reading the person hands in. one note per source. never rebuilt.
 ```
@@ -55,6 +57,7 @@ Why each one exists:
 | `state/todo-last.md` | without the previous list there is no way to see what was edited |
 | `state/watch.md` | without read marks every run re-reads everything, or misses a range |
 | `state/decisions.md` | the generated page remembers nothing; answers and leftovers must survive a rebuild |
+| `state/archive/`, `state/metrics.csv` | the list copy and the generated page are overwritten every run; without these nothing shows how the system behaves over time |
 | `log.md` | a new session starts cold; the log is what it starts from |
 | `method.md` | rules drift unless each change is dated and tied to what went wrong |
 | `agent.md` | a new session must be able to run without the earlier chat |
@@ -100,12 +103,12 @@ The person edits the list, then tells a session "process". The agent first reads
    - Deleted item: the case that matters most. Check for a ticket still assigned, a promise made, someone waiting. Say what was checked and what wasn't. Ask whether it was dropped, done or handed off, and record what it leaves behind.
    - Everything found in steps 2 to 4 that the list doesn't have goes under "not on your list".
 6. **Rebuild the generated page** from scratch, carrying over every unresolved finding.
-7. **Save state.** Write the list text from step 1 (not the live file) to `state/todo-last.md`. Move the read marks in `state/watch.md`. Add first-seen dates, answers and open questions to `state/decisions.md`.
+7. **Save state.** Write the list text from step 1 (not the live file) to `state/todo-last.md`. Move the read marks in `state/watch.md`. Add first-seen dates, answers and open questions to `state/decisions.md`. Copy the list text and the rebuilt page to a new dated folder in `state/archive/`, and append one row to `state/metrics.csv`: list counts, edit counts, how many findings are shown, how many are new, how many left because the person adopted them, because they resolved, or because the person said drop. A number that can't be counted stays empty. `agent.md` defines each column.
 8. **Report and log.** Tell the person, shortest first: what follows from their edits, what is new and not on the list, answers that came in, writes proposed. Then add a log entry at the top.
 
 ## 8. Other commands
 
-- **Weekly pass** (Fridays): compare this week's tickets with the list and propose status changes; ask keep, drop or park for each open item first seen 14 or more days ago; answer the trial checks with evidence from the log; ask whether any rule should change.
+- **Weekly pass** (Fridays): compare this week's tickets with the list and propose status changes; ask keep, drop or park for each open item first seen 14 or more days ago; answer the trial checks with evidence from the log and the week's rows in `state/metrics.csv`; ask whether any rule should change.
 - **Catch up on a stream**: rebuild that stream page's generated sections from its sources.
 - **Ingest**: save an outside source as a note in `reading/` (links and date on top, what was checked against the source and what wasn't, then the paste as given), and add one entry to the stream page it bears on.
 - **Watch / stop watching a conversation**: edit the table in `state/watch.md`.
@@ -147,12 +150,13 @@ The incidents so far and what each one produced:
 | the agent proposed a spike that had been run and closed a month earlier under another team | check existing and finished tickets before proposing work |
 | a pasted summary of outside reading had nowhere to live | `reading/` and the ingest command |
 | a note saying "yes, build ..." answered a question no file had kept; the run built a weaker copy of something another session had already built that afternoon | open questions are written down; a build request in a note gets a brief first |
+| the person asked how the system behaves over time; the list copy and the generated page are overwritten each run, so nothing could answer | every run is archived and adds one row of counts (`state/archive/`, `state/metrics.csv`) |
 
-**(proposed)** Two gaps the last incident shows that no rule covers yet:
+A fourth mechanism was added 2026-11-15 and has no history yet: **every run leaves a row of counts and a copy of both pages.** The counts say whether the list grows or churns, whether items age, and what happens to findings: adopted, resolved, dropped, or left to pile up. The copies are the evidence behind the counts. Limits: items match by text, so a reword and a delete-plus-add can be confused and the edit counts carry some noise; rows marked `backfill` were rebuilt after the fact.
+
+**(proposed)** One gap the last incident shows that no rule covers yet:
 
 - **Work by sessions outside this folder is invisible.** The other session's handoff note sat in a different repo. A fix: every session that builds something for the person adds one line to this folder's log with the path of its handoff note, or the daily run searches a known set of folders for handoff notes newer than the last run.
-- **Nothing measures the system.** The trial checks are answered by judgment. A fix: the log entry records three numbers per run (findings added to "not on your list", findings the person later put on the list or acted on, findings the person said to drop), so the weekly pass can say what share of findings were worth showing.
-
 ## 11. Setting it up from nothing
 
 1. Create the folder and the empty files from section 4.

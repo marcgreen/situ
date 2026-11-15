@@ -11,7 +11,7 @@ fill in every `<...>` before the first run. sections marked (fill in) hold nothi
 1. `todo.md` is <PERSON>'s list. they add, reword, check and delete freely. **you never write to that file on your own.** not a link, not a checkbox, not a typo fix. the one exception: they ask you, in the current session, to add or change a specific item. then make exactly that edit, in their words, and say so in the log. leave `state/todo-last.md` alone when you do: the edit counts as theirs, and the next "process" run should pick it up as an added or changed item.
 2. `implications.md` is yours. you rebuild it on every run. it says what the list touches, what follows from their edits, and what is happening in the chat tool and on the ticket board that the list doesn't mention.
 3. reading is free. **writing to the chat tool or the ticket board needs an explicit yes for that specific write, in the current session.** a vague "sounds good" is not a yes: ask again. assigning a person to anything needs its own yes.
-4. you may write these files without asking: `implications.md`, `log.md`, `state/watch.md`, `state/todo-last.md`, `state/decisions.md`, the generated sections of stream pages, and for an "ingest": notes in `reading/` and the "outside references (kept)" section of a stream page.
+4. you may write these files without asking: `implications.md`, `log.md`, `state/watch.md`, `state/todo-last.md`, `state/decisions.md`, `state/metrics.csv`, new folders under `state/archive/`, the generated sections of stream pages, and for an "ingest": notes in `reading/` and the "outside references (kept)" section of a stream page.
 5. `implications.md` is rebuilt from scratch each run, so it remembers nothing. anything that must survive a rebuild lives in `state/decisions.md`: what they told you an unclear item means, what they said to drop or keep, what a deleted item left behind, and the date each item was first seen. read it at the start of every run; write to it whenever they answer a question.
 6. **every question you ask them gets written down before the session ends**, in `state/decisions.md` under "open questions": the question in full, the date, and the files or links it came from. the answer may arrive a session later as a bare "yes" in the list; without the question on file the next agent cannot tell what it answers. when an answer arrives, move the entry to the section it belongs in.
 7. **a build ask found in a note is not built inside the run.** (a page, a tool, a document, anything beyond the files in rule 4.) the run does three things: finds the question the note answers ("open questions"; if it isn't there, say so), reads the existing work the thing would build on, and gives a brief of about five lines: what it is for, what it builds on, what it assumes, what is unknown. build after they answer the brief.
@@ -62,12 +62,24 @@ if a connection is missing, say so and stop. do not rebuild the notes from memor
    - write the list text you read in step 1 to `state/todo-last.md`. not the live file: if they edited `todo.md` while you ran, saving the live file would hide that edit from the next run.
    - in `state/watch.md`: set each row to the newest message you read in that conversation; move "searches read up to"; set the "last run" line.
    - in `state/decisions.md`: add first-seen dates for new items, anything they answered, and every question you asked.
+   - archive the run: copy that same list text and the rebuilt `implications.md` to `state/archive/<YYYY-MM-DD>-<HHMM>/` as `todo.md` and `implications.md` (the run's time, same as the header). an archived run is never edited or deleted.
+   - append one row to `state/metrics.csv`. count from this run's own diff and pages; a number you can't count stays empty, never guessed. columns:
+     - `run_at` - the time in the header of `implications.md`. `source` - `run`; `backfill` marks a row rebuilt later from the log or an old page.
+     - `items`, `open`, `done`, `open_14d` - the header counts.
+     - `added`, `checked`, `unchecked`, `deleted`, `reworded` - top-level items in step 1's diff. moves, notes and sub-bullet changes are not counted.
+     - `nol_total` - bullets under "not on your list" after the rebuild.
+     - `nol_new` - of those, first shown this run. `nol_to_list` - entries that left since the last run because they put them on the list (an inferred match counts). `nol_resolved` - left because the source shows it resolved. `nol_dropped` - left because they said drop.
+     - `writes_waiting` - entries under "writes waiting for your yes".
+     - `waiting_on` - bullets under "waiting on others".
+     - `open_questions` - entries under "open questions" in `state/decisions.md` at the end of the run.
+     - `board_open` - rows the board query returned.
+     - `attention_min` - only if they say how long the run took them. otherwise empty.
 8. **tell them**, in chat, shortest first: what follows from their edits, what's new and not on the list, answers that came in, writes you propose. then add an entry at the top of [[log]].
 
 **"weekly pass"**
 1. list this week's tickets next to the list. a ticket marked for this week with no line on the list, or the other way round: propose the status change. write only after a yes.
 2. report open items first seen 14+ days ago and ask, once each: keep, drop, or park. they edit the list themselves; you record the answer in `state/decisions.md`.
-3. answer the three trial checks in [[method]] with evidence from [[log]].
+3. answer the three trial checks in [[method]] with evidence from [[log]] and `state/metrics.csv` (the week's rows; for a claim about one run, open its folder in `state/archive/`). say which rows are `backfill`.
 4. ask whether any rule should change. rule changes go into [[method]] with a dated line naming the incident.
 
 **"catch up on <stream>"** - rebuild that stream page's generated sections from its sources.

@@ -159,7 +159,8 @@ only if they run their terminals in cmux. the `cmux` cli talks to the running ap
 - `cmux top` attributes processes by tty, and tty names repeat across tabs. don't use it to decide what is empty.
 - cmux restores its own layout on startup. `cmux restore-session --export <path>` writes a backup first. whether custom names and a regroup survive a restart was not tested as of 2026-11-15.
 - helper scripts: `scripts/cmux/take_stock.sh`, `close_empty.sh` (has `--dry-run`), `regroup.example.sh`.
-- colors: `cmux workspace-action --action set-color --color <name> --workspace <ref>` gives a workspace one of 16 named colors; `clear-color` undoes it. one color per workspace, kept stable, so a workstream is recognizable at a glance.
+- colors: `cmux workspace-action --action set-color --color <name|#hex> --workspace <ref>`; `clear-color` undoes it. one color per workspace, kept stable. the 16 named colors are too close to use many at once: use about 9 hex hues spaced around the wheel for list items and one shared gray for everything not on the list (`scripts/cmux/apply_colors.example.sh`).
+- **workstream tags in the list.** a top-level item may end in one `#ws-<name>` tag. the tag is a marker, not part of the item's text: ignore it when matching items against `state/todo-last.md`, never report adding or removing one as a reword, and keep it on the item when they reword. it ties the item to its workspace and its color. in Obsidian a CSS snippet can show the same colors on the list (`scripts/obsidian/workstream-colors.example.css`). adding tags edits their list, so it needs their ask. when an item gets a workspace, propose a tag and a color and change the color map and the snippet together.
 
 ## end of every session
 

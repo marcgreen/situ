@@ -1,0 +1,48 @@
+/* Example Obsidian CSS snippet: the same colors as the cmux workspaces, on the list.
+   A top-level list item ends in one #ws-<name> tag. The tag becomes a colored pill
+   and the item's line gets a colored bar on its left.
+   Setup: copy to <vault>/.obsidian/snippets/workstream-colors.css, repeat the four
+   rules below once per tag, then switch the snippet on under
+   Settings > Appearance > CSS snippets.
+   Written from Obsidian's class names and used on one setup; check it renders. */
+
+body {
+  --ws-first: #d32f2f;
+  --ws-second: #1e88e5;
+}
+
+/* editing view: bar on the item's line, color on the tag */
+.HyperMD-list-line:has(.cm-tag-ws-first) {
+  box-shadow: inset 4px 0 0 var(--ws-first);
+}
+.cm-hashtag.cm-tag-ws-first {
+  background-color: var(--ws-first);
+  color: #fff;
+}
+
+/* reading view: color on the tag, bar on the whole item with its sub-bullets */
+a.tag[href="#ws-first"] {
+  background-color: var(--ws-first);
+  color: #fff;
+}
+.markdown-rendered li:has(> a.tag[href="#ws-first"]),
+.markdown-rendered li:has(> p > a.tag[href="#ws-first"]) {
+  box-shadow: inset 4px 0 0 var(--ws-first);
+}
+
+/* second tag: same four rules */
+.HyperMD-list-line:has(.cm-tag-ws-second) {
+  box-shadow: inset 4px 0 0 var(--ws-second);
+}
+.cm-hashtag.cm-tag-ws-second {
+  background-color: var(--ws-second);
+  color: #fff;
+}
+a.tag[href="#ws-second"] {
+  background-color: var(--ws-second);
+  color: #fff;
+}
+.markdown-rendered li:has(> a.tag[href="#ws-second"]),
+.markdown-rendered li:has(> p > a.tag[href="#ws-second"]) {
+  box-shadow: inset 4px 0 0 var(--ws-second);
+}
